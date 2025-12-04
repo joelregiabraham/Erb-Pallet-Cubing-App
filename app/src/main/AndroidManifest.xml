@@ -46,13 +46,13 @@
             android:screenOrientation="portrait"
             android:exported="false" />
 
-        <!-- TODO: Phase 3 - Uncomment when ProHeaderActivity is created -->
-        <!--
+        <!-- ProHeaderActivity - Phase 3 -->
+
         <activity
             android:name=".ProHeaderActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
-        -->
+
 
         <!-- TODO: Phase 4 - Uncomment when PalletDetailActivity is created -->
         <!--

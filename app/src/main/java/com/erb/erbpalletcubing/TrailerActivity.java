@@ -77,20 +77,20 @@ public class TrailerActivity extends AppCompatActivity {
     private void displayUserInfo() {
         String terminal = sessionManager.getTerminalId();
         String receiver = sessionManager.getReceiverId();
-        
+
         String userInfo = "User: T-" + terminal + " | R-" + receiver;
         tvUserInfo.setText(userInfo);
     }
 
     private void checkResumeState() {
         String currentTrailer = sessionManager.getCurrentTrailer();
-        
+
         if (currentTrailer != null && !currentTrailer.isEmpty()) {
             // User has a trailer in progress
             tvResumeIndicator.setVisibility(View.VISIBLE);
             tvResumeIndicator.setText("⚠ Trailer in progress: " + currentTrailer);
             btnCancelTrailer.setVisibility(View.VISIBLE);
-            
+
             // Pre-fill trailer number
             etTrailerNumber.setText(currentTrailer);
         } else {
@@ -262,16 +262,8 @@ public class TrailerActivity extends AppCompatActivity {
     }
 
     private void navigateToProHeader() {
-        // TODO: Phase 3 - Replace with ProHeaderActivity
-        // Intent intent = new Intent(this, ProHeaderActivity.class);
-        // startActivity(intent);
-        
-        // For now, show toast
-        Toast.makeText(this, "ProHeaderActivity not yet implemented (Phase 3)",
-                Toast.LENGTH_LONG).show();
-        
-        // TODO: Remove this line in Phase 3
-        // finish();
+        Intent intent = new Intent(this, ProHeaderActivity.class);
+        startActivity(intent);
     }
 
     @Override

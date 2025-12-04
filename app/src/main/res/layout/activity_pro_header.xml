@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header with User Info and Cancel Trailer -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#1976D2"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tvUserInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="User: T-101 | R-550 | Trailer: 401252"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_toStartOf="@+id/btnCancelTrailer"
+                android:layout_toLeftOf="@+id/btnCancelTrailer" />
+
+            <Button
+                android:id="@+id/btnCancelTrailer"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="CANCEL TRAILER"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="#FF9800"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+
+        <!-- Main Content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- PRO Number Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📷 SCAN PRO NUMBER"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Use hardware scan buttons or tap field for manual entry"
+                android:textSize="13sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/etProNumber"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:hint="PRO Number (10 digits)"
+                android:textSize="24sp"
+                android:padding="16dp"
+                android:background="@android:color/white"
+                android:inputType="number"
+                android:maxLength="10"
+                android:maxLines="1"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Expected Pallets Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="EXPECTED PALLETS (Qty)"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/etExpectedPallets"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:hint="Enter expected pallets"
+                android:textSize="24sp"
+                android:padding="16dp"
+                android:background="@android:color/white"
+                android:inputType="number"
+                android:maxLines="1"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Freight Type Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="FREIGHT TYPE"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/toggleFreightType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_marginBottom="20dp">
+
+                <Button
+                    android:id="@+id/btnFresh"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:text="FRESH"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp" />
+
+                <Button
+                    android:id="@+id/btnFrozen"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:text="FROZEN"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp" />
+
+                <Button
+                    android:id="@+id/btnDual"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:text="DUAL"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp" />
+            </LinearLayout>
+
+            <!-- Temperature 1 Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TEMP 1 (F)"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/etTemp1"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:hint="Enter temperature (-15 to 35)"
+                android:textSize="24sp"
+                android:padding="16dp"
+                android:background="@android:color/white"
+                android:inputType="numberSigned|numberDecimal"
+                android:maxLines="1"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Temperature 2 Section (Visible only when DUAL selected) -->
+            <TextView
+                android:id="@+id/tvTemp2Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TEMP 2 (F)"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/etTemp2"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:hint="Enter temperature (-15 to 35)"
+                android:textSize="24sp"
+                android:padding="16dp"
+                android:background="@android:color/white"
+                android:inputType="numberSigned|numberDecimal"
+                android:maxLines="1"
+                android:layout_marginBottom="20dp"
+                android:visibility="gone" />
+
+            <!-- Start Pallets Button -->
+            <Button
+                android:id="@+id/btnStartPallets"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="START PALLETS"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="#4CAF50"
+                android:layout_marginTop="8dp"
+                android:enabled="false"
+                android:alpha="0.5" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
