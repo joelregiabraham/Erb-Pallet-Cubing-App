@@ -14,13 +14,12 @@
 bin/
 gen/
 out/
-release/
 
 # Gradle files
 .gradle/
 build/
 
-# Local configuration file (sdk path, etc)
+# Local configuration file
 local.properties
 
 # Android Studio
@@ -31,5 +30,9 @@ local.properties
 .externalNativeBuild
 .cxx
 
-# Allow APKs in the release folder
+# Build directory
+app/build/
+
+# BUT we WANT to include APKs in the release folder
+!app/release/
 !app/release/*.apk
