@@ -7,7 +7,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,11 +22,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etTerminalId;
     private EditText etReceiverId;
     private Button btnStartShift;
-    private NumericKeypadView numericKeypad;
-    private TextView tvKeypadLabel;
 
     private SessionManager sessionManager;
-    private EditText currentActiveField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +40,6 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize views
         initializeViews();
-
-        // Setup numeric keypads
-        setupNumericKeypads();
 
         // Setup validation
         setupValidation();
@@ -119,86 +112,6 @@ public class LoginActivity extends AppCompatActivity {
         etTerminalId = findViewById(R.id.etTerminalId);
         etReceiverId = findViewById(R.id.etReceiverId);
         btnStartShift = findViewById(R.id.btnStartShift);
-        numericKeypad = findViewById(R.id.numericKeypad);
-        tvKeypadLabel = findViewById(R.id.tvKeypadLabel);
-    }
-
-    private void setupNumericKeypads() {
-        // Disable system keyboard for both fields
-        disableSystemKeyboard(etTerminalId);
-        disableSystemKeyboard(etReceiverId);
-
-        // Configure keypad
-        numericKeypad.setAllowNegative(false);
-        numericKeypad.setAllowDecimal(false);
-
-        // Start with Terminal ID field
-        switchKeypadToField(etTerminalId);
-
-        // Set up field click listeners to switch keypad target
-        etTerminalId.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchKeypadToField(etTerminalId);
-            }
-        });
-
-        etReceiverId.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchKeypadToField(etReceiverId);
-            }
-        });
-
-        // Done listener - switch to next field or attempt login
-        numericKeypad.setOnDoneListener(new NumericKeypadView.OnDoneListener() {
-            @Override
-            public void onDone(String value) {
-                if (currentActiveField == etTerminalId) {
-                    // Validate Terminal ID
-                    if (ValidationHelper.isValidTerminalId(value)) {
-                        // Switch to Receiver ID field
-                        switchKeypadToField(etReceiverId);
-                    } else {
-                        Toast.makeText(LoginActivity.this,
-                                "Please enter a valid Terminal ID (numeric)",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                } else if (currentActiveField == etReceiverId) {
-                    // Validate Receiver ID and attempt login
-                    if (validateAndLogin()) {
-                        navigateToTrailerActivity();
-                    }
-                }
-            }
-        });
-    }
-
-    /**
-     * Disable system keyboard for an EditText
-     */
-    private void disableSystemKeyboard(EditText editText) {
-        editText.setShowSoftInputOnFocus(false);
-        editText.setTextIsSelectable(true);
-    }
-
-    /**
-     * Switch keypad to target a specific field
-     */
-    private void switchKeypadToField(EditText field) {
-        currentActiveField = field;
-        numericKeypad.setTargetEditText(field);
-
-        // Make sure system keyboard stays hidden
-        disableSystemKeyboard(field);
-        field.requestFocus();
-
-        // Update label to show which field is active
-        if (field == etTerminalId) {
-            tvKeypadLabel.setText("▲ Enter Terminal ID");
-        } else if (field == etReceiverId) {
-            tvKeypadLabel.setText("▲ Enter Receiver ID");
-        }
     }
 
     private void setupValidation() {

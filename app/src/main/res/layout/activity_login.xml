@@ -1,107 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
+    android:orientation="vertical"
+    android:padding="16dp"
     android:background="#F5F5F5">
 
-    <LinearLayout
+    <!-- Header -->
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:text="LOGIN ACTIVITY"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#1976D2"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="@android:color/white"
+        android:layout_marginBottom="24dp" />
 
-        <!-- Header -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="LOGIN ACTIVITY"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#1976D2"
-            android:gravity="center"
-            android:padding="12dp"
-            android:background="@android:color/white"
-            android:layout_marginBottom="16dp" />
+    <!-- Terminal ID Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TERMINAL ID (Numeric)"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="12dp" />
 
-        <!-- Terminal ID Section -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TERMINAL ID (Numeric)"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginBottom="8dp" />
+    <EditText
+        android:id="@+id/etTerminalId"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:hint="Enter Terminal ID"
+        android:textSize="24sp"
+        android:padding="16dp"
+        android:background="@android:color/white"
+        android:inputType="number"
+        android:maxLines="1"
+        android:layout_marginBottom="32dp" />
 
-        <EditText
-            android:id="@+id/etTerminalId"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:hint="Enter Terminal ID"
-            android:textSize="20sp"
-            android:padding="12dp"
-            android:background="@android:color/white"
-            android:inputType="none"
-            android:textIsSelectable="false"
-            android:layout_marginBottom="16dp" />
+    <!-- Receiver ID Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="RECEIVER ID (Numeric)"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="12dp" />
 
-        <!-- Receiver ID Section -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="RECEIVER ID (Numeric)"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginBottom="8dp" />
+    <EditText
+        android:id="@+id/etReceiverId"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:hint="Enter Receiver ID"
+        android:textSize="24sp"
+        android:padding="16dp"
+        android:background="@android:color/white"
+        android:inputType="number"
+        android:maxLines="1"
+        android:layout_marginBottom="24dp" />
 
-        <EditText
-            android:id="@+id/etReceiverId"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:hint="Enter Receiver ID"
-            android:textSize="20sp"
-            android:padding="12dp"
-            android:background="@android:color/white"
-            android:inputType="none"
-            android:textIsSelectable="false"
-            android:layout_marginBottom="16dp" />
+    <!-- Spacer -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-        <!-- Shared Numeric Keypad -->
-        <TextView
-            android:id="@+id/tvKeypadLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="▲ Enter Terminal ID"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#1976D2"
-            android:gravity="center"
-            android:layout_marginBottom="8dp" />
+    <!-- Start Shift Button -->
+    <Button
+        android:id="@+id/btnStartShift"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="START SHIFT"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="#1976D2"
+        android:enabled="false"
+        android:alpha="0.5" />
 
-        <com.erb.erbpalletcubing.NumericKeypadView
-            android:id="@+id/numericKeypad"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:allowNegative="false"
-            app:allowDecimal="false" />
-
-        <!-- Start Shift Button -->
-        <Button
-            android:id="@+id/btnStartShift"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="START SHIFT"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            android:background="#1976D2"
-            android:enabled="false"
-            android:alpha="0.5" />
-
-    </LinearLayout>
-
-</ScrollView>
+</LinearLayout>
