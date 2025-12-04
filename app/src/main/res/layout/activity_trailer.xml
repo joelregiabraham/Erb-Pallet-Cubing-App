@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5">
+
+    <!-- Header with User Info and Sign Out -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1976D2"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tvUserInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User: T-101 | R-550"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true" />
+
+        <Button
+            android:id="@+id/btnSignOut"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="SIGN OUT"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:background="#D32F2F"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <!-- Resume Indicator (visible only if trailer in progress) -->
+    <TextView
+        android:id="@+id/tvResumeIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚠ Trailer in progress: 401252"
+        android:textSize="14sp"
+        android:textColor="#FF9800"
+        android:textStyle="bold"
+        android:background="#FFF3E0"
+        android:padding="12dp"
+        android:gravity="center"
+        android:visibility="gone" />
+
+    <!-- Main Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Trailer Number Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TRAILER NUMBER"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etTrailerNumber"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:hint="Enter Trailer Number"
+            android:textSize="24sp"
+            android:padding="16dp"
+            android:background="@android:color/white"
+            android:inputType="textCapCharacters|textNoSuggestions"
+            android:maxLines="1"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Spacer -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Cancel Trailer Button (visible only if trailer in progress) -->
+        <Button
+            android:id="@+id/btnCancelTrailer"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:text="CANCEL TRAILER"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:background="#FF9800"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone" />
+
+        <!-- Next Button -->
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:text="NEXT"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:background="#1976D2"
+            android:enabled="false"
+            android:alpha="0.5" />
+    </LinearLayout>
+
+</LinearLayout>

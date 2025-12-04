@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#F5F5F5">
+
+    <!-- Header -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LOGIN ACTIVITY"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#1976D2"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="@android:color/white"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Terminal ID Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TERMINAL ID (Numeric)"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/etTerminalId"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:hint="Enter Terminal ID"
+        android:textSize="20sp"
+        android:padding="12dp"
+        android:background="@android:color/white"
+        android:inputType="none"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_marginBottom="8dp" />
+
+    <com.erb.erbpalletcubing.NumericKeypadView
+        android:id="@+id/keypadTerminal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:allowNegative="false"
+        app:allowDecimal="false" />
+
+    <!-- Receiver ID Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="RECEIVER ID (Numeric)"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/etReceiverId"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:hint="Enter Receiver ID"
+        android:textSize="20sp"
+        android:padding="12dp"
+        android:background="@android:color/white"
+        android:inputType="none"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_marginBottom="8dp" />
+
+    <com.erb.erbpalletcubing.NumericKeypadView
+        android:id="@+id/keypadReceiver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:allowNegative="false"
+        app:allowDecimal="false" />
+
+    <!-- Spacer -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Start Shift Button -->
+    <Button
+        android:id="@+id/btnStartShift"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="START SHIFT"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="#1976D2"
+        android:enabled="false"
+        android:alpha="0.5" />
+
+</LinearLayout>
