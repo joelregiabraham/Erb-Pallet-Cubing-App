@@ -1,5 +1,4 @@
-# Built application files
-*.apk
+# Built application files (but NOT in app/release/)
 *.aar
 *.ap_
 *.aab
@@ -14,7 +13,6 @@
 bin/
 gen/
 out/
-release/
 
 # Gradle files
 .gradle/
@@ -31,5 +29,9 @@ local.properties
 .externalNativeBuild
 .cxx
 
-# BUT we WANT to include APKs in a specific folder
+# Ignore build output APKs
+app/build/outputs/apk/
+
+# BUT we WANT to track APKs in the release folder
+!app/release/
 !app/release/*.apk

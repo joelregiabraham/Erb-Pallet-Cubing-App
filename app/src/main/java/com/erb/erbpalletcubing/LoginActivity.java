@@ -7,6 +7,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,10 +23,11 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etTerminalId;
     private EditText etReceiverId;
     private Button btnStartShift;
-    private NumericKeypadView keypadTerminal;
-    private NumericKeypadView keypadReceiver;
+    private NumericKeypadView numericKeypad;
+    private TextView tvKeypadLabel;
 
     private SessionManager sessionManager;
+    private EditText currentActiveField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,47 +119,86 @@ public class LoginActivity extends AppCompatActivity {
         etTerminalId = findViewById(R.id.etTerminalId);
         etReceiverId = findViewById(R.id.etReceiverId);
         btnStartShift = findViewById(R.id.btnStartShift);
-        keypadTerminal = findViewById(R.id.keypadTerminal);
-        keypadReceiver = findViewById(R.id.keypadReceiver);
+        numericKeypad = findViewById(R.id.numericKeypad);
+        tvKeypadLabel = findViewById(R.id.tvKeypadLabel);
     }
 
     private void setupNumericKeypads() {
-        // Connect keypads to EditText fields
-        keypadTerminal.setTargetEditText(etTerminalId);
-        keypadTerminal.setAllowNegative(false);
-        keypadTerminal.setAllowDecimal(false);
+        // Disable system keyboard for both fields
+        disableSystemKeyboard(etTerminalId);
+        disableSystemKeyboard(etReceiverId);
 
-        keypadReceiver.setTargetEditText(etReceiverId);
-        keypadReceiver.setAllowNegative(false);
-        keypadReceiver.setAllowDecimal(false);
+        // Configure keypad
+        numericKeypad.setAllowNegative(false);
+        numericKeypad.setAllowDecimal(false);
 
-        // Set focus on Terminal ID by default
-        etTerminalId.requestFocus();
+        // Start with Terminal ID field
+        switchKeypadToField(etTerminalId);
 
-        // Done listener for terminal keypad - move to receiver
-        keypadTerminal.setOnDoneListener(new NumericKeypadView.OnDoneListener() {
+        // Set up field click listeners to switch keypad target
+        etTerminalId.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDone(String value) {
-                if (ValidationHelper.isValidTerminalId(value)) {
-                    etReceiverId.requestFocus();
-                    keypadReceiver.setTargetEditText(etReceiverId);
-                } else {
-                    Toast.makeText(LoginActivity.this,
-                            "Please enter a valid Terminal ID (numeric)",
-                            Toast.LENGTH_SHORT).show();
-                }
+            public void onClick(View v) {
+                switchKeypadToField(etTerminalId);
             }
         });
 
-        // Done listener for receiver keypad - attempt login
-        keypadReceiver.setOnDoneListener(new NumericKeypadView.OnDoneListener() {
+        etReceiverId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchKeypadToField(etReceiverId);
+            }
+        });
+
+        // Done listener - switch to next field or attempt login
+        numericKeypad.setOnDoneListener(new NumericKeypadView.OnDoneListener() {
             @Override
             public void onDone(String value) {
-                if (validateAndLogin()) {
-                    navigateToTrailerActivity();
+                if (currentActiveField == etTerminalId) {
+                    // Validate Terminal ID
+                    if (ValidationHelper.isValidTerminalId(value)) {
+                        // Switch to Receiver ID field
+                        switchKeypadToField(etReceiverId);
+                    } else {
+                        Toast.makeText(LoginActivity.this,
+                                "Please enter a valid Terminal ID (numeric)",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } else if (currentActiveField == etReceiverId) {
+                    // Validate Receiver ID and attempt login
+                    if (validateAndLogin()) {
+                        navigateToTrailerActivity();
+                    }
                 }
             }
         });
+    }
+
+    /**
+     * Disable system keyboard for an EditText
+     */
+    private void disableSystemKeyboard(EditText editText) {
+        editText.setShowSoftInputOnFocus(false);
+        editText.setTextIsSelectable(true);
+    }
+
+    /**
+     * Switch keypad to target a specific field
+     */
+    private void switchKeypadToField(EditText field) {
+        currentActiveField = field;
+        numericKeypad.setTargetEditText(field);
+
+        // Make sure system keyboard stays hidden
+        disableSystemKeyboard(field);
+        field.requestFocus();
+
+        // Update label to show which field is active
+        if (field == etTerminalId) {
+            tvKeypadLabel.setText("▲ Enter Terminal ID");
+        } else if (field == etReceiverId) {
+            tvKeypadLabel.setText("▲ Enter Receiver ID");
+        }
     }
 
     private void setupValidation() {
@@ -187,7 +228,7 @@ public class LoginActivity extends AppCompatActivity {
         String receiverId = etReceiverId.getText().toString().trim();
 
         boolean isValid = ValidationHelper.isValidTerminalId(terminalId) &&
-                         ValidationHelper.isValidReceiverId(receiverId);
+                ValidationHelper.isValidReceiverId(receiverId);
 
         btnStartShift.setEnabled(isValid);
         btnStartShift.setAlpha(isValid ? 1.0f : 0.5f);
