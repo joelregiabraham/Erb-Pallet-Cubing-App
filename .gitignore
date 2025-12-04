@@ -1,37 +1,22 @@
-# Built application files (but NOT in app/release/)
-*.aar
-*.ap_
-*.aab
+# Gradle files
+.gradle/
+build/
+app/build/
 
-# Files for the ART/Dalvik VM
-*.dex
+# IDE files
+.idea/
+*.iml
+local.properties
 
-# Java class files
-*.class
+# OS files
+.DS_Store
 
 # Generated files
+*.class
+*.dex
 bin/
 gen/
 out/
 
-# Gradle files
-.gradle/
-build/
-
-# Local configuration file (sdk path, etc)
-local.properties
-
-# Android Studio
-*.iml
-.idea/
-.DS_Store
-/captures
-.externalNativeBuild
-.cxx
-
-# Ignore build output APKs
-app/build/outputs/apk/
-
-# BUT we WANT to track APKs in the release folder
-!app/release/
-!app/release/*.apk
+# Build outputs (but NOT app/release/)
+app/build/outputs/
