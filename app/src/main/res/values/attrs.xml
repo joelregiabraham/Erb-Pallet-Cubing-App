@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Custom attributes for NumericKeypadView -->
+    <declare-styleable name="NumericKeypadView">
+        <attr name="allowNegative" format="boolean" />
+        <attr name="allowDecimal" format="boolean" />
+    </declare-styleable>
+</resources>

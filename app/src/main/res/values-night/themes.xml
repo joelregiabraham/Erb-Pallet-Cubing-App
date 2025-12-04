@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme for Erb Pallet Cubing App (Night) -->
+    <style name="Theme.ErbPalletCubing" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">#1976D2</item>
+        <item name="colorPrimaryDark">#1565C0</item>
+        <item name="colorAccent">#388E3C</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">#1565C0</item>
+
+        <!-- Customize your theme here -->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#BBBBBB</item>
+    </style>
+</resources>
