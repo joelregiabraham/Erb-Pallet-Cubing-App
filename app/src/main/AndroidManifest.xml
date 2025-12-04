@@ -54,13 +54,13 @@
             android:exported="false" />
 
 
-        <!-- TODO: Phase 4 - Uncomment when PalletDetailActivity is created -->
-        <!--
+        <!-- PalletDetailActivity - Phase 4 -->
+
         <activity
             android:name=".PalletDetailActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
-        -->
+
 
         <!-- TODO: Phase 5 - Uncomment when SummaryActivity is created -->
         <!--

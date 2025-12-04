@@ -33,7 +33,7 @@ public class ProHeaderActivity extends AppCompatActivity {
     private TextView tvTemp2Label;
     private Button btnStartPallets;
     private Button btnCancelTrailer;
-    
+
     private Button btnFresh;
     private Button btnFrozen;
     private Button btnDual;
@@ -93,7 +93,7 @@ public class ProHeaderActivity extends AppCompatActivity {
         tvTemp2Label = findViewById(R.id.tvTemp2Label);
         btnStartPallets = findViewById(R.id.btnStartPallets);
         btnCancelTrailer = findViewById(R.id.btnCancelTrailer);
-        
+
         btnFresh = findViewById(R.id.btnFresh);
         btnFrozen = findViewById(R.id.btnFrozen);
         btnDual = findViewById(R.id.btnDual);
@@ -103,7 +103,7 @@ public class ProHeaderActivity extends AppCompatActivity {
         String terminal = sessionManager.getTerminalId();
         String receiver = sessionManager.getReceiverId();
         String trailer = sessionManager.getCurrentTrailer();
-        
+
         String userInfo = "User: T-" + terminal + " | R-" + receiver + " | Trailer: " + trailer;
         tvUserInfo.setText(userInfo);
     }
@@ -118,9 +118,9 @@ public class ProHeaderActivity extends AppCompatActivity {
 
             @Override
             public void onScanError(String error) {
-                Toast.makeText(ProHeaderActivity.this, 
-                    "Scan error: " + error, 
-                    Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProHeaderActivity.this,
+                        "Scan error: " + error,
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -130,20 +130,20 @@ public class ProHeaderActivity extends AppCompatActivity {
         if (ValidationHelper.isValidProNumber(barcode)) {
             etProNumber.setText(barcode);
             Toast.makeText(this, "PRO scanned: " + barcode, Toast.LENGTH_SHORT).show();
-            
+
             // Auto-focus to next field
             etExpectedPallets.requestFocus();
         } else {
-            Toast.makeText(this, 
-                "Invalid PRO number. Must be 10 digits. Scanned: " + barcode, 
-                Toast.LENGTH_LONG).show();
+            Toast.makeText(this,
+                    "Invalid PRO number. Must be 10 digits. Scanned: " + barcode,
+                    Toast.LENGTH_LONG).show();
         }
     }
 
     private void setupFreightTypeToggle() {
         // Create toggle button group
         toggleFreightType = new ToggleButtonGroup(this);
-        
+
         // Add buttons to toggle group
         toggleFreightType.addButton(btnFresh, "Fresh");
         toggleFreightType.addButton(btnFrozen, "Frozen");
@@ -169,7 +169,7 @@ public class ProHeaderActivity extends AppCompatActivity {
             etTemp2.setVisibility(View.GONE);
             etTemp2.setText(""); // Clear value
         }
-        
+
         updateStartButtonState();
     }
 
@@ -191,14 +191,14 @@ public class ProHeaderActivity extends AppCompatActivity {
                 }
 
                 isFormatting = true;
-                
+
                 String text = s.toString();
-                
+
                 // Remove existing °F if present
                 if (text.endsWith("°F")) {
                     text = text.substring(0, text.length() - 2).trim();
                 }
-                
+
                 // Add °F if not empty and is valid number
                 if (!text.isEmpty()) {
                     try {
@@ -210,7 +210,7 @@ public class ProHeaderActivity extends AppCompatActivity {
                         // Invalid number, don't add °F
                     }
                 }
-                
+
                 isFormatting = false;
             }
         });
@@ -232,14 +232,14 @@ public class ProHeaderActivity extends AppCompatActivity {
                 }
 
                 isFormatting = true;
-                
+
                 String text = s.toString();
-                
+
                 // Remove existing °F if present
                 if (text.endsWith("°F")) {
                     text = text.substring(0, text.length() - 2).trim();
                 }
-                
+
                 // Add °F if not empty and is valid number
                 if (!text.isEmpty()) {
                     try {
@@ -251,7 +251,7 @@ public class ProHeaderActivity extends AppCompatActivity {
                         // Invalid number, don't add °F
                     }
                 }
-                
+
                 isFormatting = false;
             }
         });
@@ -280,7 +280,7 @@ public class ProHeaderActivity extends AppCompatActivity {
 
     private void updateStartButtonState() {
         boolean isValid = validateAllFields();
-        
+
         btnStartPallets.setEnabled(isValid);
         btnStartPallets.setAlpha(isValid ? 1.0f : 0.5f);
     }
@@ -354,8 +354,8 @@ public class ProHeaderActivity extends AppCompatActivity {
 
         // Final validation
         if (!validateAllFields()) {
-            Toast.makeText(this, "Please fill all required fields correctly", 
-                Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please fill all required fields correctly",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -385,15 +385,15 @@ public class ProHeaderActivity extends AppCompatActivity {
             }
             sessionManager.saveResumeState("pro_header", resumeData);
 
-            Toast.makeText(this, "PRO saved. Starting pallet entry...", 
-                Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "PRO saved. Starting pallet entry...",
+                    Toast.LENGTH_SHORT).show();
 
             // Navigate to Pallet Detail Activity
             navigateToPalletDetail();
 
         } catch (Exception e) {
-            Toast.makeText(this, "Error: " + e.getMessage(), 
-                Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Error: " + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
         }
     }
 
@@ -405,39 +405,39 @@ public class ProHeaderActivity extends AppCompatActivity {
         if (formatted == null || formatted.trim().isEmpty()) {
             return "";
         }
-        
+
         String value = formatted.trim();
-        
+
         // Remove °F suffix if present
         if (value.endsWith("°F")) {
             value = value.substring(0, value.length() - 2).trim();
         }
-        
+
         return value;
     }
 
     private void checkResumeState() {
         String currentPro = sessionManager.getCurrentPro();
-        
+
         if (currentPro != null && !currentPro.isEmpty()) {
             // Resuming mid-PRO entry - pre-fill fields
             etProNumber.setText(currentPro);
-            
+
             int expectedPallets = sessionManager.getExpectedPallets();
             if (expectedPallets > 0) {
                 etExpectedPallets.setText(String.valueOf(expectedPallets));
             }
-            
+
             String freightType = sessionManager.getFreightType();
             if (freightType != null) {
                 toggleFreightType.selectByValue(freightType);
             }
-            
+
             String temp1 = sessionManager.getTemp1();
             if (temp1 != null && !temp1.isEmpty()) {
                 etTemp1.setText(temp1);
             }
-            
+
             String temp2 = sessionManager.getTemp2();
             if (temp2 != null && !temp2.isEmpty()) {
                 etTemp2.setText(temp2);
@@ -501,13 +501,8 @@ public class ProHeaderActivity extends AppCompatActivity {
     }
 
     private void navigateToPalletDetail() {
-        // TODO: Phase 4 - uncomment when PalletDetailActivity is created
-        // Intent intent = new Intent(this, PalletDetailActivity.class);
-        // startActivity(intent);
-        
-        // For now, show toast
-        Toast.makeText(this, "PalletDetailActivity not yet implemented (Phase 4)",
-                Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, PalletDetailActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -529,12 +524,12 @@ public class ProHeaderActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        
+
         // Unregister scanner
         if (scannerHandler != null) {
             scannerHandler.unregisterScanner();
         }
-        
+
         // Close database
         if (dbHelper != null) {
             dbHelper.close();

@@ -256,6 +256,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Delete all records for a specific PRO number
+     * Used for "ABANDON PRO" functionality
+     */
+    public int deleteByProNumber(String trailerNumber, String proNumberIncoming) {
+        SQLiteDatabase db = null;
+        int deletedRows = 0;
+
+        try {
+            db = this.getWritableDatabase();
+            deletedRows = db.delete(
+                    TABLE_CUBING_DATA,
+                    COLUMN_TRAILER_NUMBER + " = ? AND " + COLUMN_PRO_NUMBER_INCOMING + " = ?",
+                    new String[]{trailerNumber, proNumberIncoming}
+            );
+
+            Log.d(TAG, "Deleted " + deletedRows + " records for PRO: " + proNumberIncoming);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error deleting records by PRO: " + e.getMessage(), e);
+        }
+
+        return deletedRows;
+    }
+
+    /**
      * Delete all records in the database
      */
     public int deleteAllRecords() {
@@ -286,8 +311,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             db = this.getReadableDatabase();
             cursor = db.rawQuery(
-                    "SELECT COUNT(*) FROM " + TABLE_CUBING_DATA + 
-                    " WHERE " + COLUMN_TRAILER_NUMBER + " = ?",
+                    "SELECT COUNT(*) FROM " + TABLE_CUBING_DATA +
+                            " WHERE " + COLUMN_TRAILER_NUMBER + " = ?",
                     new String[]{trailerNumber}
             );
 
@@ -317,8 +342,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             db = this.getReadableDatabase();
             cursor = db.rawQuery(
-                    "SELECT COUNT(*) FROM " + TABLE_CUBING_DATA + 
-                    " WHERE " + COLUMN_PRO_NUMBER_INCOMING + " = ?",
+                    "SELECT COUNT(*) FROM " + TABLE_CUBING_DATA +
+                            " WHERE " + COLUMN_PRO_NUMBER_INCOMING + " = ?",
                     new String[]{proNumberIncoming}
             );
 
@@ -343,7 +368,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private CubingRecord cursorToRecord(Cursor cursor) {
         try {
             CubingRecord record = new CubingRecord();
-            
+
             record.timestamp = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
             record.terminal = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TERMINAL));
             record.receiver = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RECEIVER));
@@ -353,28 +378,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             record.proNumberErb = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRO_NUMBER_ERB));
             record.freightType = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FREIGHT_TYPE));
             record.temp1 = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TEMP1));
-            
+
             int temp2Index = cursor.getColumnIndexOrThrow(COLUMN_TEMP2);
             record.temp2 = cursor.isNull(temp2Index) ? null : cursor.getString(temp2Index);
-            
+
             record.expectedPalletsPro = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EXPECTED_PALLETS_PRO));
             record.palletSequence = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PALLET_SEQUENCE));
             record.palletHeight = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PALLET_HEIGHT));
             record.condition = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONDITION));
-            
+
             int osdReasonIndex = cursor.getColumnIndexOrThrow(COLUMN_OSD_REASON);
             record.osdReason = cursor.isNull(osdReasonIndex) ? null : cursor.getString(osdReasonIndex);
-            
+
             int osdQuantityIndex = cursor.getColumnIndexOrThrow(COLUMN_OSD_QUANTITY);
             record.osdQuantity = cursor.isNull(osdQuantityIndex) ? null : cursor.getInt(osdQuantityIndex);
-            
+
             int osdQuantityTypeIndex = cursor.getColumnIndexOrThrow(COLUMN_OSD_QUANTITY_TYPE);
             record.osdQuantityType = cursor.isNull(osdQuantityTypeIndex) ? null : cursor.getString(osdQuantityTypeIndex);
-            
+
             record.status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
-            
+
             return record;
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Error converting cursor to record: " + e.getMessage(), e);
             return null;

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Progress Header -->
+        <TextView
+            android:id="@+id/tvProgress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PALLET 1 of 10"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#1976D2"
+            android:gravity="center"
+            android:padding="20dp"
+            android:background="@android:color/white"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Main Content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Pallet Height Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="PALLET HEIGHT (in)"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/etPalletHeight"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:hint="Enter pallet height in inches"
+                android:textSize="24sp"
+                android:padding="16dp"
+                android:background="@android:color/white"
+                android:inputType="number"
+                android:maxLines="1"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Condition Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CONDITION"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/toggleCondition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="20dp">
+
+                <Button
+                    android:id="@+id/btnConditionOk"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:text="OK"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp" />
+
+                <Button
+                    android:id="@+id/btnConditionOsd"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:text="OS&amp;D"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp" />
+            </LinearLayout>
+
+            <!-- OS&D Panel (Conditional visibility) -->
+            <LinearLayout
+                android:id="@+id/panelOsd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#FFF3E0"
+                android:padding="16dp"
+                android:layout_marginBottom="20dp"
+                android:visibility="gone">
+
+                <!-- OS&D Reason -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="OS&amp;D REASON"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
+                    android:id="@+id/btnSelectReason"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="Select Reason"
+                    android:textSize="18sp"
+                    android:gravity="center"
+                    android:background="@android:color/white"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Custom Reason (visible only when "Other" selected) -->
+                <EditText
+                    android:id="@+id/etCustomReason"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:hint="Enter custom reason"
+                    android:textSize="18sp"
+                    android:padding="12dp"
+                    android:background="@android:color/white"
+                    android:inputType="text"
+                    android:maxLines="2"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone" />
+
+                <!-- OS&D Quantity -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="QUANTITY"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/etOsdQuantity"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:hint="Enter quantity"
+                    android:textSize="20sp"
+                    android:padding="12dp"
+                    android:background="@android:color/white"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Quantity Type -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="QUANTITY TYPE"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:id="@+id/toggleQuantityType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <Button
+                        android:id="@+id/btnQuantityCases"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_weight="1"
+                        android:text="CASES"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp" />
+
+                    <Button
+                        android:id="@+id/btnQuantityPallets"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_weight="1"
+                        android:text="PALLETS"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Action Buttons -->
+            <Button
+                android:id="@+id/btnSaveAndNext"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="SAVE &amp; NEXT PALLET"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="#4CAF50"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
+                android:enabled="false"
+                android:alpha="0.5" />
+
+            <Button
+                android:id="@+id/btnAbandonPro"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:text="ABANDON PRO"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="#FF9800" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
