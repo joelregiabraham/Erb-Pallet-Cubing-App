@@ -90,6 +90,13 @@ public class LoginActivity extends AppCompatActivity {
                 intent = new Intent(this, PalletDetailActivity.class);
                 break;
 
+            case "summary":
+                // Resume to Summary screen - pass trailer number
+                intent = new Intent(this, SummaryActivity.class);
+                String trailerNumber = sessionManager.getCurrentTrailer();
+                intent.putExtra("TRAILER_NUMBER", trailerNumber);
+                break;
+
             default:
                 // Unknown screen, go to trailer
                 intent = new Intent(this, TrailerActivity.class);

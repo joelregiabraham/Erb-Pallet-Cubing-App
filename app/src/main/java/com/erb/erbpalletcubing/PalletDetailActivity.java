@@ -392,9 +392,9 @@ public class PalletDetailActivity extends AppCompatActivity {
             if (rowId != -1) {
                 // Success! Check if last pallet
                 if (currentIndex >= expectedPallets) {
-                    // LAST PALLET - Increment and CLEAR resume state
+                    // LAST PALLET - Navigate to Summary
+                    // Note: Don't clear resume state here - let Summary screen handle it
                     sessionManager.setCurrentPalletIndex(currentIndex + 1);
-                    sessionManager.clearResumeState();  // Critical: Don't resume to invalid state
 
                     // Navigate to Summary immediately
                     navigateToSummary();
@@ -523,7 +523,9 @@ public class PalletDetailActivity extends AppCompatActivity {
 
     private void navigateToSummary() {
         // Phase 5: Navigate to Summary screen
+        // Pass trailer number via Intent (don't rely on SessionManager after clearResumeState)
         Intent intent = new Intent(this, SummaryActivity.class);
+        intent.putExtra("TRAILER_NUMBER", sessionManager.getCurrentTrailer());
         startActivity(intent);
         finish();
     }

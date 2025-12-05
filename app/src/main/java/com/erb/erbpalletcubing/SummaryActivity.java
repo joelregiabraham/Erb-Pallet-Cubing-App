@@ -50,7 +50,17 @@ public class SummaryActivity extends AppCompatActivity {
         // Initialize
         sessionManager = new SessionManager(this);
         dbHelper = new DatabaseHelper(this);
-        trailerNumber = sessionManager.getCurrentTrailer();
+
+        // Get trailer number from Intent (passed from PalletDetailActivity)
+        trailerNumber = getIntent().getStringExtra("TRAILER_NUMBER");
+
+        // Fallback: Try SessionManager if Intent is empty (for resume scenarios)
+        if (trailerNumber == null || trailerNumber.trim().isEmpty()) {
+            trailerNumber = sessionManager.getCurrentTrailer();
+            android.util.Log.w(TAG, "Trailer not in Intent, got from SessionManager: " + trailerNumber);
+        } else {
+            android.util.Log.d(TAG, "Trailer from Intent: " + trailerNumber);
+        }
 
         // Save resume state for this screen
         sessionManager.saveResumeState("summary", null);
