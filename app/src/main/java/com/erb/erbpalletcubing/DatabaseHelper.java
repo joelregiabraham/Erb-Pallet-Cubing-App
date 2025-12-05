@@ -586,6 +586,103 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // ==================== END DUPLICATE PRO DETECTION METHODS ====================
 
+    // ==================== SUMMARY SCREEN METHODS (Phase 5) ====================
+
+    /**
+     * Get all unique PROs for a trailer with their pallet counts
+     * Used by SummaryActivity to display list of PROs
+     */
+    public List<ProSummary> getAllProsForTrailer(String trailerNumber) {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        List<ProSummary> proList = new ArrayList<>();
+
+        try {
+            db = this.getReadableDatabase();
+
+            // Query to get unique PROs with count
+            String query = "SELECT " + COLUMN_PRO_NUMBER_INCOMING +
+                    ", COUNT(*) as pallet_count" +
+                    " FROM " + TABLE_CUBING_DATA +
+                    " WHERE " + COLUMN_TRAILER_NUMBER + " = ?" +
+                    " GROUP BY " + COLUMN_PRO_NUMBER_INCOMING +
+                    " ORDER BY MIN(" + COLUMN_TIMESTAMP + ")"; // Order by first entry time
+
+            cursor = db.rawQuery(query, new String[]{trailerNumber});
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    ProSummary summary = new ProSummary();
+                    summary.proNumber = cursor.getString(0);
+                    summary.palletCount = cursor.getInt(1);
+                    proList.add(summary);
+                } while (cursor.moveToNext());
+            }
+
+            Log.d(TAG, "Retrieved " + proList.size() + " PROs for trailer: " + trailerNumber);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting PROs for trailer: " + e.getMessage(), e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return proList;
+    }
+
+    /**
+     * Get all records for a specific trailer (for CSV export)
+     */
+    public List<CubingRecord> getAllRecordsForTrailer(String trailerNumber) {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        List<CubingRecord> records = new ArrayList<>();
+
+        try {
+            db = this.getReadableDatabase();
+            cursor = db.query(
+                    TABLE_CUBING_DATA,
+                    null, // All columns
+                    COLUMN_TRAILER_NUMBER + " = ?",
+                    new String[]{trailerNumber},
+                    null, null,
+                    COLUMN_PRO_NUMBER_INCOMING + ", " + COLUMN_PALLET_SEQUENCE // Order by PRO then sequence
+            );
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    CubingRecord record = cursorToRecord(cursor);
+                    if (record != null) {
+                        records.add(record);
+                    }
+                } while (cursor.moveToNext());
+            }
+
+            Log.d(TAG, "Retrieved " + records.size() + " records for trailer: " + trailerNumber);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting records for trailer: " + e.getMessage(), e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return records;
+    }
+
+    /**
+     * Helper class for PRO summary info
+     */
+    public static class ProSummary {
+        public String proNumber;
+        public int palletCount;
+    }
+
+    // ==================== END SUMMARY SCREEN METHODS ====================
+
     /**
      * Inner class to represent a cubing record
      */

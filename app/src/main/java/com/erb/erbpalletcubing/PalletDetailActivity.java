@@ -522,14 +522,10 @@ public class PalletDetailActivity extends AppCompatActivity {
     }
 
     private void navigateToSummary() {
-        // TODO: Phase 5 - uncomment when SummaryActivity is created
-        // Intent intent = new Intent(this, SummaryActivity.class);
-        // startActivity(intent);
-        // finish();
-
-        // For now, show toast
-        Toast.makeText(this, "All pallets complete! SummaryActivity not yet implemented (Phase 5)",
-                Toast.LENGTH_LONG).show();
+        // Phase 5: Navigate to Summary screen
+        Intent intent = new Intent(this, SummaryActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override

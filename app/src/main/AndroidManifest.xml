@@ -62,13 +62,24 @@
             android:exported="false" />
 
 
-        <!-- TODO: Phase 5 - Uncomment when SummaryActivity is created -->
-        <!--
+        <!-- SummaryActivity - Phase 5 -->
+
         <activity
             android:name=".SummaryActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
-        -->
+
+        <!-- FileProvider for secure file sharing (Phase 5 - CSV Export) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.erb.erbpalletcubing.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
 
     </application>
 

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TRAILER COMPLETE ✓"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#4CAF50"
+            android:gravity="center"
+            android:padding="16dp"
+            android:background="#F0F0F0"
+            android:layout_marginBottom="24dp" />
+
+        <!-- PRO List Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="COMPLETED PROs:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="12dp" />
+
+        <!-- PRO List Container (populated dynamically) -->
+        <LinearLayout
+            android:id="@+id/proListContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#F8F8F8"
+            android:padding="8dp"
+            android:layout_marginBottom="12dp">
+            <!-- PRO items added dynamically -->
+        </LinearLayout>
+
+        <!-- View All Button -->
+        <Button
+            android:id="@+id/btnViewAll"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="VIEW ALL"
+            android:textSize="16sp"
+            android:textColor="#1976D2"
+            android:background="@android:color/transparent"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone" />
+
+        <!-- Spacer to push buttons to bottom -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Action Buttons -->
+        <Button
+            android:id="@+id/btnAddAnotherPro"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:text="ADD ANOTHER PRO"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:background="#1976D2"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/btnExportTrailer"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:text="FINISH &amp; EXPORT TRAILER"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:background="#4CAF50"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/btnDeleteAndStartNew"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:text="DELETE DATA &amp; START NEW"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:background="#D32F2F"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</ScrollView>
