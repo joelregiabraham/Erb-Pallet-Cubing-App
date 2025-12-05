@@ -83,19 +83,11 @@ public class LoginActivity extends AppCompatActivity {
                 break;
 
             case "pro_header":
-                // TODO: Phase 3 - uncomment when ProHeaderActivity is created
-                // intent = new Intent(this, ProHeaderActivity.class);
-                // break;
-                // For now, go to trailer
-                intent = new Intent(this, TrailerActivity.class);
+                intent = new Intent(this, ProHeaderActivity.class);
                 break;
 
             case "pallet_detail":
-                // TODO: Phase 4 - uncomment when PalletDetailActivity is created
-                // intent = new Intent(this, PalletDetailActivity.class);
-                // break;
-                // For now, go to trailer
-                intent = new Intent(this, TrailerActivity.class);
+                intent = new Intent(this, PalletDetailActivity.class);
                 break;
 
             default:

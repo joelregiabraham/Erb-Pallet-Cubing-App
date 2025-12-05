@@ -131,6 +131,15 @@ public class PalletDetailActivity extends AppCompatActivity {
         toggleQuantityType = new ToggleButtonGroup(this);
         toggleQuantityType.addButton(btnQuantityCases, "Cases");
         toggleQuantityType.addButton(btnQuantityPallets, "Pallets");
+
+        // CRITICAL FIX: Add listener to update button state when selection changes
+        toggleQuantityType.setOnSelectionChangeListener(new ToggleButtonGroup.OnSelectionChangeListener() {
+            @Override
+            public void onSelectionChanged(String selection) {
+                // Trigger validation update when quantity type is selected
+                updateSaveButtonState();
+            }
+        });
     }
 
     private void handleConditionSelection(String condition) {
@@ -158,7 +167,7 @@ public class PalletDetailActivity extends AppCompatActivity {
 
     private void showReasonDialog() {
         final String[] reasons = {"Damaged", "Short", "Over", "Misloaded", "Other"};
-        
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select OS&D Reason");
         builder.setSingleChoiceItems(reasons, -1, new DialogInterface.OnClickListener() {
@@ -166,7 +175,7 @@ public class PalletDetailActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 selectedReason = reasons[which];
                 btnSelectReason.setText(selectedReason);
-                
+
                 // Show custom reason field if "Other" selected
                 if ("Other".equalsIgnoreCase(selectedReason)) {
                     etCustomReason.setVisibility(View.VISIBLE);
@@ -174,7 +183,7 @@ public class PalletDetailActivity extends AppCompatActivity {
                     etCustomReason.setVisibility(View.GONE);
                     etCustomReason.setText("");
                 }
-                
+
                 updateSaveButtonState();
                 dialog.dismiss();
             }
@@ -205,7 +214,7 @@ public class PalletDetailActivity extends AppCompatActivity {
 
     private void updateSaveButtonState() {
         boolean isValid = validateAllFields();
-        
+
         btnSaveAndNext.setEnabled(isValid && !isSaving);
         btnSaveAndNext.setAlpha(isValid && !isSaving ? 1.0f : 0.5f);
     }
@@ -275,31 +284,31 @@ public class PalletDetailActivity extends AppCompatActivity {
     private void showVerificationDialog() {
         // Build verification message
         StringBuilder message = new StringBuilder();
-        
+
         int currentIndex = sessionManager.getCurrentPalletIndex();
         int expectedPallets = sessionManager.getExpectedPallets();
-        
+
         message.append("Save Pallet ").append(currentIndex).append(" of ").append(expectedPallets).append("?\n\n");
-        
+
         String height = etPalletHeight.getText().toString().trim();
         message.append("Height: ").append(height).append("\"\n");
-        
+
         String condition = toggleCondition.getSelectedValue();
         message.append("Condition: ").append(condition);
-        
+
         if ("OS&D".equalsIgnoreCase(condition)) {
             message.append(" - ").append(selectedReason);
-            
+
             if ("Other".equalsIgnoreCase(selectedReason)) {
                 String customReason = etCustomReason.getText().toString().trim();
                 message.append(" (").append(customReason).append(")");
             }
-            
+
             String quantity = etOsdQuantity.getText().toString().trim();
             String quantityType = toggleQuantityType.getSelectedValue();
             message.append("\nQuantity: ").append(quantity).append(" ").append(quantityType);
         }
-        
+
         // Show dialog
         new AlertDialog.Builder(this)
                 .setTitle("Verify Pallet Data")
@@ -325,7 +334,7 @@ public class PalletDetailActivity extends AppCompatActivity {
             String heightStr = etPalletHeight.getText().toString().trim();
             int palletHeight = Integer.parseInt(heightStr);
             String condition = toggleCondition.getSelectedValue();
-            
+
             // Get session data
             String terminal = sessionManager.getTerminalId();
             String receiver = sessionManager.getReceiverId();
@@ -336,16 +345,16 @@ public class PalletDetailActivity extends AppCompatActivity {
             String temp2 = sessionManager.getTemp2();
             int expectedPallets = sessionManager.getExpectedPallets();
             int currentIndex = sessionManager.getCurrentPalletIndex();
-            
+
             // Extract PRO prefix and Erb
             String proPrefix = ValidationHelper.extractProPrefix(proNumber);
             String proErb = ValidationHelper.extractProErb(proNumber);
-            
+
             // OS&D fields (nullable)
             String osdReason = null;
             Integer osdQuantity = null;
             String osdQuantityType = null;
-            
+
             if ("OS&D".equalsIgnoreCase(condition)) {
                 // Build OS&D reason (with "Other: " prefix if applicable)
                 if ("Other".equalsIgnoreCase(selectedReason)) {
@@ -354,12 +363,12 @@ public class PalletDetailActivity extends AppCompatActivity {
                 } else {
                     osdReason = selectedReason;
                 }
-                
+
                 String quantityStr = etOsdQuantity.getText().toString().trim();
                 osdQuantity = Integer.parseInt(quantityStr);
                 osdQuantityType = toggleQuantityType.getSelectedValue();
             }
-            
+
             // Insert into database
             long rowId = dbHelper.insertPalletRecord(
                     terminal,
@@ -379,14 +388,14 @@ public class PalletDetailActivity extends AppCompatActivity {
                     osdQuantity,
                     osdQuantityType
             );
-            
+
             if (rowId != -1) {
                 // Success! Increment pallet index
                 sessionManager.setCurrentPalletIndex(currentIndex + 1);
-                
+
                 // Save resume state
                 sessionManager.saveResumeState("pallet_detail", null);
-                
+
                 // Check if last pallet
                 if (currentIndex >= expectedPallets) {
                     // Navigate to Summary immediately
@@ -399,13 +408,13 @@ public class PalletDetailActivity extends AppCompatActivity {
                 }
             } else {
                 // Insert failed - re-enable button
-                Toast.makeText(this, "Error saving pallet. Please try again.", 
+                Toast.makeText(this, "Error saving pallet. Please try again.",
                         Toast.LENGTH_LONG).show();
                 isSaving = false;
                 btnSaveAndNext.setEnabled(true);
                 btnSaveAndNext.setAlpha(1.0f);
             }
-            
+
         } catch (Exception e) {
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             isSaving = false;
@@ -419,25 +428,25 @@ public class PalletDetailActivity extends AppCompatActivity {
         etPalletHeight.setText("");
         etOsdQuantity.setText("");
         etCustomReason.setText("");
-        
+
         // Reset toggles
         toggleCondition.clearSelection();
         toggleQuantityType.clearSelection();
-        
+
         // Hide OS&D panel
         panelOsd.setVisibility(View.GONE);
         etCustomReason.setVisibility(View.GONE);
-        
+
         // Reset reason
         selectedReason = null;
         btnSelectReason.setText("Select Reason");
-        
+
         // Update progress
         updateProgress();
-        
+
         // Focus on pallet height
         etPalletHeight.requestFocus();
-        
+
         // Update button state
         updateSaveButtonState();
     }
@@ -454,14 +463,14 @@ public class PalletDetailActivity extends AppCompatActivity {
     private void updateProgress() {
         int currentIndex = sessionManager.getCurrentPalletIndex();
         int expectedPallets = sessionManager.getExpectedPallets();
-        
+
         String progressText = "PALLET " + currentIndex + " of " + expectedPallets;
         tvProgress.setText(progressText);
     }
 
     private void showAbandonProDialog() {
         String currentPro = sessionManager.getCurrentPro();
-        
+
         new AlertDialog.Builder(this)
                 .setTitle("Abandon PRO")
                 .setMessage("Abandon PRO " + currentPro + "? All pallet data for this PRO will be deleted.")
@@ -478,20 +487,20 @@ public class PalletDetailActivity extends AppCompatActivity {
     private void performAbandonPro() {
         String currentTrailer = sessionManager.getCurrentTrailer();
         String currentPro = sessionManager.getCurrentPro();
-        
+
         try {
             // Delete all pallet records for current PRO
             int deletedRows = dbHelper.deleteByProNumber(currentTrailer, currentPro);
-            
+
             // Reset pallet index to 1
             sessionManager.setCurrentPalletIndex(1);
-            
+
             Toast.makeText(this, "PRO abandoned. " + deletedRows + " records deleted.",
                     Toast.LENGTH_SHORT).show();
-            
+
             // Navigate back to PRO Header
             navigateToProHeader();
-            
+
         } catch (Exception e) {
             Toast.makeText(this, "Error abandoning PRO: " + e.getMessage(),
                     Toast.LENGTH_LONG).show();
@@ -515,7 +524,7 @@ public class PalletDetailActivity extends AppCompatActivity {
         // Intent intent = new Intent(this, SummaryActivity.class);
         // startActivity(intent);
         // finish();
-        
+
         // For now, show toast
         Toast.makeText(this, "All pallets complete! SummaryActivity not yet implemented (Phase 5)",
                 Toast.LENGTH_LONG).show();
@@ -524,23 +533,54 @@ public class PalletDetailActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // Show confirmation before going back
+        // IMPORTANT: Delete PRO pallets to prevent partial data in export
         new AlertDialog.Builder(this)
                 .setTitle("Go Back?")
-                .setMessage("Return to PRO Header? Current pallet data will NOT be saved.")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setMessage("Return to PRO Header? This will delete ALL pallet data for this PRO.")
+                .setPositiveButton("Delete & Go Back", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        navigateToProHeader();
+                        performBackButtonDelete();
                     }
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    /**
+     * Delete PRO pallets when going back (prevents partial data in export)
+     */
+    private void performBackButtonDelete() {
+        String currentTrailer = sessionManager.getCurrentTrailer();
+        String currentPro = sessionManager.getCurrentPro();
+
+        try {
+            // Delete all pallet records for current PRO
+            int deletedRows = dbHelper.deleteByProNumber(currentTrailer, currentPro);
+
+            // Reset pallet index to 1
+            sessionManager.setCurrentPalletIndex(1);
+
+            if (deletedRows > 0) {
+                Toast.makeText(this, deletedRows + " pallets deleted.",
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            // Navigate back to PRO Header
+            navigateToProHeader();
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error: " + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+            // Still navigate back even on error
+            navigateToProHeader();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        
+
         // Close database
         if (dbHelper != null) {
             dbHelper.close();
