@@ -20,7 +20,8 @@ public class CsvExporter {
 
     /**
      * Generate CSV file for a trailer
-     * Saves to: Downloads/CubingReports/CubingData_{TrailerNumber}.csv
+     * Saves to: App-specific external storage (no permission needed on Android 6.0+)
+     * Path: /storage/emulated/0/Android/data/com.erb.erbpalletcubing/files/CubingReports/
      *
      * @param context Application context
      * @param trailerNumber Trailer number to export
@@ -34,21 +35,10 @@ public class CsvExporter {
         Log.d(TAG, "Trailer: " + trailerNumber);
 
         try {
-            // 1. Check if external storage is writable
-            if (!isExternalStorageWritable()) {
-                Log.e(TAG, "External storage not writable");
-                Log.e(TAG, "Storage state: " + Environment.getExternalStorageState());
-                return null;
-            }
+            // 1. Use app-specific external storage (no permission needed!)
+            // This directory is accessible via USB and automatically cleaned on uninstall
+            File reportDir = new File(context.getExternalFilesDir(null), EXPORT_FOLDER);
 
-            Log.d(TAG, "External storage is writable");
-
-            // 2. Create CubingReports folder in Downloads
-            File downloadsDir = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS);
-            Log.d(TAG, "Downloads directory: " + downloadsDir.getAbsolutePath());
-
-            File reportDir = new File(downloadsDir, EXPORT_FOLDER);
             Log.d(TAG, "Report directory: " + reportDir.getAbsolutePath());
 
             if (!reportDir.exists()) {
@@ -56,21 +46,31 @@ public class CsvExporter {
                 boolean created = reportDir.mkdirs();
                 if (!created) {
                     Log.e(TAG, "Failed to create directory: " + reportDir.getAbsolutePath());
-                    Log.e(TAG, "Parent exists: " + downloadsDir.exists());
-                    Log.e(TAG, "Parent writable: " + downloadsDir.canWrite());
-                    return null;
+
+                    // Fallback to internal storage
+                    Log.d(TAG, "Trying internal storage fallback...");
+                    reportDir = new File(context.getFilesDir(), EXPORT_FOLDER);
+                    Log.d(TAG, "Fallback directory: " + reportDir.getAbsolutePath());
+
+                    if (!reportDir.exists()) {
+                        created = reportDir.mkdirs();
+                        if (!created) {
+                            Log.e(TAG, "Failed to create fallback directory");
+                            return null;
+                        }
+                    }
                 }
                 Log.d(TAG, "Created directory: " + reportDir.getAbsolutePath());
             } else {
                 Log.d(TAG, "Directory already exists");
             }
 
-            // 3. Create CSV file
+            // 2. Create CSV file
             String fileName = "CubingData_" + trailerNumber + ".csv";
             csvFile = new File(reportDir, fileName);
             Log.d(TAG, "Creating CSV file: " + csvFile.getAbsolutePath());
 
-            // 4. Query database for all records
+            // 3. Query database for all records
             Log.d(TAG, "Querying database for trailer: " + trailerNumber);
             List<DatabaseHelper.CubingRecord> records = dbHelper.getAllRecordsForTrailer(trailerNumber);
 
@@ -86,7 +86,7 @@ public class CsvExporter {
 
             Log.d(TAG, "Retrieved " + records.size() + " records for export");
 
-            // 5. Write CSV content
+            // 4. Write CSV content
             FileWriter writer = new FileWriter(csvFile);
 
             // Write header row (with spaces instead of underscores)
@@ -173,20 +173,12 @@ public class CsvExporter {
     }
 
     /**
-     * Check if external storage is writable
-     */
-    private static boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
-    }
-
-    /**
      * Get export folder path for display purposes
+     * @param context Application context
+     * @return Path to export folder
      */
-    public static String getExportFolderPath() {
-        File downloadsDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS);
-        File reportDir = new File(downloadsDir, EXPORT_FOLDER);
+    public static String getExportFolderPath(Context context) {
+        File reportDir = new File(context.getExternalFilesDir(null), EXPORT_FOLDER);
         return reportDir.getAbsolutePath();
     }
 }

@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- External storage path for Downloads/CubingReports -->
-    <external-path 
-        name="cubing_reports" 
-        path="Download/CubingReports/" />
+    <!-- App-specific external storage (no permission needed) -->
+    <external-files-path
+        name="cubing_reports"
+        path="CubingReports/" />
+
+    <!-- Internal storage fallback -->
+    <files-path
+        name="cubing_reports_internal"
+        path="CubingReports/" />
 </paths>
