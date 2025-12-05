@@ -414,6 +414,178 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return sdf.format(new Date());
     }
 
+    // ==================== DUPLICATE PRO DETECTION METHODS (Phase 3 Update) ====================
+
+    /**
+     * Count existing pallets for a specific PRO in a trailer
+     * Used to detect duplicate PRO entries
+     */
+    public int countPalletsForPro(String trailerNumber, String proNumber) {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        int count = 0;
+
+        try {
+            db = this.getReadableDatabase();
+            cursor = db.rawQuery(
+                    "SELECT COUNT(*) FROM " + TABLE_CUBING_DATA +
+                            " WHERE " + COLUMN_TRAILER_NUMBER + " = ?" +
+                            " AND " + COLUMN_PRO_NUMBER_INCOMING + " = ?",
+                    new String[]{trailerNumber, proNumber}
+            );
+
+            if (cursor != null && cursor.moveToFirst()) {
+                count = cursor.getInt(0);
+            }
+
+            Log.d(TAG, "Pallet count for PRO " + proNumber + ": " + count);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error counting pallets for PRO: " + e.getMessage(), e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return count;
+    }
+
+    /**
+     * Get maximum pallet sequence number for a specific PRO
+     * Used when continuing an existing PRO
+     */
+    public int getMaxPalletSequence(String trailerNumber, String proNumber) {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        int maxSequence = 0;
+
+        try {
+            db = this.getReadableDatabase();
+            cursor = db.rawQuery(
+                    "SELECT MAX(" + COLUMN_PALLET_SEQUENCE + ") FROM " + TABLE_CUBING_DATA +
+                            " WHERE " + COLUMN_TRAILER_NUMBER + " = ?" +
+                            " AND " + COLUMN_PRO_NUMBER_INCOMING + " = ?",
+                    new String[]{trailerNumber, proNumber}
+            );
+
+            if (cursor != null && cursor.moveToFirst()) {
+                maxSequence = cursor.getInt(0);
+            }
+
+            Log.d(TAG, "Max pallet sequence for PRO " + proNumber + ": " + maxSequence);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting max pallet sequence: " + e.getMessage(), e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return maxSequence;
+    }
+
+    /**
+     * Get existing PRO data for pre-filling fields when continuing
+     * Returns freight type, temps, and expected pallets from first pallet of PRO
+     */
+    public ProData getExistingProData(String trailerNumber, String proNumber) {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        ProData proData = null;
+
+        try {
+            db = this.getReadableDatabase();
+            cursor = db.query(
+                    TABLE_CUBING_DATA,
+                    new String[]{
+                            COLUMN_FREIGHT_TYPE,
+                            COLUMN_TEMP1,
+                            COLUMN_TEMP2,
+                            COLUMN_EXPECTED_PALLETS_PRO
+                    },
+                    COLUMN_TRAILER_NUMBER + " = ? AND " + COLUMN_PRO_NUMBER_INCOMING + " = ?",
+                    new String[]{trailerNumber, proNumber},
+                    null, null, null, "1"  // LIMIT 1
+            );
+
+            if (cursor != null && cursor.moveToFirst()) {
+                proData = new ProData();
+                proData.freightType = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FREIGHT_TYPE));
+                proData.temp1 = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TEMP1));
+
+                int temp2Index = cursor.getColumnIndexOrThrow(COLUMN_TEMP2);
+                proData.temp2 = cursor.isNull(temp2Index) ? null : cursor.getString(temp2Index);
+
+                proData.expectedPalletsPro = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EXPECTED_PALLETS_PRO));
+
+                Log.d(TAG, "Retrieved existing PRO data: " + proData.freightType + ", " +
+                        proData.temp1 + ", Expected: " + proData.expectedPalletsPro);
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting existing PRO data: " + e.getMessage(), e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return proData;
+    }
+
+    /**
+     * Update all existing pallet rows for a PRO with new data
+     * Used when user modifies PRO details while continuing
+     */
+    public int updateProData(String trailerNumber, String proNumber,
+                             int expectedPallets, String freightType,
+                             String temp1, String temp2) {
+        SQLiteDatabase db = null;
+        int updatedRows = 0;
+
+        try {
+            db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_EXPECTED_PALLETS_PRO, expectedPallets);
+            values.put(COLUMN_FREIGHT_TYPE, freightType);
+            values.put(COLUMN_TEMP1, temp1);
+
+            if (temp2 != null && !temp2.isEmpty()) {
+                values.put(COLUMN_TEMP2, temp2);
+            } else {
+                values.putNull(COLUMN_TEMP2);
+            }
+
+            updatedRows = db.update(
+                    TABLE_CUBING_DATA,
+                    values,
+                    COLUMN_TRAILER_NUMBER + " = ? AND " + COLUMN_PRO_NUMBER_INCOMING + " = ?",
+                    new String[]{trailerNumber, proNumber}
+            );
+
+            Log.d(TAG, "Updated " + updatedRows + " rows for PRO: " + proNumber);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating PRO data: " + e.getMessage(), e);
+        }
+
+        return updatedRows;
+    }
+
+    /**
+     * Helper class to hold PRO data for pre-filling
+     */
+    public static class ProData {
+        public String freightType;
+        public String temp1;
+        public String temp2;
+        public int expectedPalletsPro;
+    }
+
+    // ==================== END DUPLICATE PRO DETECTION METHODS ====================
+
     /**
      * Inner class to represent a cubing record
      */

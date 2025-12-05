@@ -361,7 +361,34 @@ public class ProHeaderActivity extends AppCompatActivity {
 
         try {
             int expectedPallets = Integer.parseInt(expectedPalletsStr);
+            String trailer = sessionManager.getCurrentTrailer();
 
+            // ===== DUPLICATE PRO CHECK (Phase 3 Update) =====
+            int existingPalletCount = dbHelper.countPalletsForPro(trailer, proNumber);
+
+            if (existingPalletCount > 0) {
+                // Duplicate PRO detected!
+                showDuplicateProDialog(proNumber, existingPalletCount, expectedPallets,
+                        freightType, temp1, temp2);
+                return; // Stop here, wait for user decision
+            }
+            // ===== END DUPLICATE PRO CHECK =====
+
+            // No duplicate, proceed with normal flow
+            proceedToStartPallets(proNumber, expectedPallets, freightType, temp1, temp2);
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error: " + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Proceed to start pallets (extracted from handleStartPallets for reuse)
+     */
+    private void proceedToStartPallets(String proNumber, int expectedPallets,
+                                       String freightType, String temp1, String temp2) {
+        try {
             // Extract PRO prefix and Erb
             String proPrefix = ValidationHelper.extractProPrefix(proNumber);
             String proErb = ValidationHelper.extractProErb(proNumber);
@@ -377,7 +404,7 @@ public class ProHeaderActivity extends AppCompatActivity {
             // Save resume state
             HashMap<String, String> resumeData = new HashMap<>();
             resumeData.put("pro", proNumber);
-            resumeData.put("expectedPallets", expectedPalletsStr);
+            resumeData.put("expectedPallets", String.valueOf(expectedPallets));
             resumeData.put("freightType", freightType);
             resumeData.put("temp1", temp1);
             if (temp2 != null) {
@@ -487,6 +514,182 @@ public class ProHeaderActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG).show();
         }
     }
+
+    // ==================== DUPLICATE PRO DETECTION METHODS (Phase 3 Update) ====================
+
+    /**
+     * Show dialog when duplicate PRO is detected
+     */
+    private void showDuplicateProDialog(final String proNumber, final int existingCount,
+                                        final int newExpectedPallets, final String freightType,
+                                        final String temp1, final String temp2) {
+        new AlertDialog.Builder(this)
+                .setTitle("⚠️ PRO Already Exists!")
+                .setMessage("PRO: " + proNumber + "\n" +
+                        "Current: " + existingCount + " pallets entered\n\n" +
+                        "What would you like to do?")
+                .setPositiveButton("CONTINUE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User wants to add more pallets
+                        continueExistingPro(proNumber, existingCount, newExpectedPallets,
+                                freightType, temp1, temp2);
+                    }
+                })
+                .setNegativeButton("RESTART", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User wants to delete and start over
+                        restartPro(proNumber, newExpectedPallets, freightType, temp1, temp2);
+                    }
+                })
+                .setCancelable(false) // Force user to choose
+                .show();
+    }
+
+    /**
+     * Continue existing PRO - validate and update with new values
+     */
+    private void continueExistingPro(String proNumber, int existingCount,
+                                     int newExpectedPallets, String freightType,
+                                     String temp1, String temp2) {
+        // Validate: new expected pallets must be >= existing count
+        if (newExpectedPallets < existingCount) {
+            showInvalidExpectedPalletsDialog(proNumber, existingCount, newExpectedPallets);
+            return;
+        }
+
+        String trailer = sessionManager.getCurrentTrailer();
+
+        try {
+            // Update all existing rows with new PRO data
+            int updatedRows = dbHelper.updateProData(trailer, proNumber, newExpectedPallets,
+                    freightType, temp1, temp2);
+
+            // Get max sequence to continue from
+            int maxSequence = dbHelper.getMaxPalletSequence(trailer, proNumber);
+
+            // Set session to continue from next pallet
+            sessionManager.setCurrentPalletIndex(maxSequence + 1);
+            sessionManager.setExpectedPallets(newExpectedPallets);
+            sessionManager.setCurrentPro(proNumber);
+            sessionManager.setFreightType(freightType);
+            sessionManager.setTemp1(temp1);
+            sessionManager.setTemp2(temp2);
+
+            // Save resume state
+            HashMap<String, String> resumeData = new HashMap<>();
+            resumeData.put("pro", proNumber);
+            resumeData.put("expectedPallets", String.valueOf(newExpectedPallets));
+            resumeData.put("freightType", freightType);
+            resumeData.put("temp1", temp1);
+            if (temp2 != null) {
+                resumeData.put("temp2", temp2);
+            }
+            sessionManager.saveResumeState("pro_header", resumeData);
+
+            Toast.makeText(this,
+                    "Continuing PRO. Updated " + updatedRows + " pallets. Starting at pallet " + (maxSequence + 1),
+                    Toast.LENGTH_SHORT).show();
+
+            // Navigate to pallet entry
+            navigateToPalletDetail();
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error continuing PRO: " + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Restart PRO - delete existing and start fresh
+     */
+    private void restartPro(final String proNumber, final int expectedPallets,
+                            final String freightType, final String temp1, final String temp2) {
+        String trailer = sessionManager.getCurrentTrailer();
+        final int existingCount = dbHelper.countPalletsForPro(trailer, proNumber);
+
+        // Show confirmation
+        new AlertDialog.Builder(this)
+                .setTitle("⚠️ Delete Existing Data?")
+                .setMessage("This will delete " + existingCount + " pallets for\n" +
+                        "PRO " + proNumber + "\n\n" +
+                        "Are you sure?")
+                .setPositiveButton("DELETE & RESTART", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        performRestart(proNumber, expectedPallets, freightType, temp1, temp2, existingCount);
+                    }
+                })
+                .setNegativeButton("CANCEL", null)
+                .show();
+    }
+
+    /**
+     * Perform the actual restart after confirmation
+     */
+    private void performRestart(String proNumber, int expectedPallets, String freightType,
+                                String temp1, String temp2, int existingCount) {
+        String trailer = sessionManager.getCurrentTrailer();
+
+        try {
+            // Delete all pallets for this PRO
+            int deletedRows = dbHelper.deleteByProNumber(trailer, proNumber);
+
+            Toast.makeText(this, deletedRows + " pallets deleted. Starting fresh.",
+                    Toast.LENGTH_SHORT).show();
+
+            // Proceed normally with fresh start
+            proceedToStartPallets(proNumber, expectedPallets, freightType, temp1, temp2);
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error restarting PRO: " + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Show error when new expected pallets is less than existing count
+     */
+    private void showInvalidExpectedPalletsDialog(final String proNumber,
+                                                  final int existingCount,
+                                                  final int newExpectedPallets) {
+        new AlertDialog.Builder(this)
+                .setTitle("⚠️ Invalid Expected Pallets!")
+                .setMessage("Existing: " + existingCount + " pallets\n" +
+                        "You entered: " + newExpectedPallets + " pallets\n\n" +
+                        "Expected pallets cannot be less than existing count.")
+                .setPositiveButton("GO BACK", null) // Just close dialog
+                .setNegativeButton("ABANDON PRO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        abandonPro(proNumber);
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * Abandon PRO - delete all existing pallets
+     */
+    private void abandonPro(String proNumber) {
+        String trailer = sessionManager.getCurrentTrailer();
+
+        try {
+            int deletedRows = dbHelper.deleteByProNumber(trailer, proNumber);
+
+            Toast.makeText(this, "PRO abandoned. " + deletedRows + " pallets deleted.",
+                    Toast.LENGTH_SHORT).show();
+
+            // Stay on this screen, user can re-enter PRO details
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error abandoning PRO: " + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    // ==================== END DUPLICATE PRO DETECTION METHODS ====================
 
     private void navigateToLogin() {
         Intent intent = new Intent(this, LoginActivity.class);

@@ -390,17 +390,19 @@ public class PalletDetailActivity extends AppCompatActivity {
             );
 
             if (rowId != -1) {
-                // Success! Increment pallet index
-                sessionManager.setCurrentPalletIndex(currentIndex + 1);
-
-                // Save resume state
-                sessionManager.saveResumeState("pallet_detail", null);
-
-                // Check if last pallet
+                // Success! Check if last pallet
                 if (currentIndex >= expectedPallets) {
+                    // LAST PALLET - Increment and CLEAR resume state
+                    sessionManager.setCurrentPalletIndex(currentIndex + 1);
+                    sessionManager.clearResumeState();  // Critical: Don't resume to invalid state
+
                     // Navigate to Summary immediately
                     navigateToSummary();
                 } else {
+                    // NOT LAST PALLET - Increment and save resume state
+                    sessionManager.setCurrentPalletIndex(currentIndex + 1);
+                    sessionManager.saveResumeState("pallet_detail", null);
+
                     // Reset form for next pallet (immediate, no delay)
                     Toast.makeText(this, "Pallet saved!", Toast.LENGTH_SHORT).show();
                     resetForm();
