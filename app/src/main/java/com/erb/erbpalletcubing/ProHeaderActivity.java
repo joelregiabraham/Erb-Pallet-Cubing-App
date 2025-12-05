@@ -59,6 +59,26 @@ public class ProHeaderActivity extends AppCompatActivity {
             return;
         }
 
+        // CRITICAL: Check if trailer passed via Intent (from Summary "Add Another PRO")
+        String trailerFromIntent = getIntent().getStringExtra("TRAILER_NUMBER");
+        if (trailerFromIntent != null && !trailerFromIntent.trim().isEmpty()) {
+            // Trailer passed via Intent - save to SessionManager
+            sessionManager.setCurrentTrailer(trailerFromIntent);
+            android.util.Log.d(TAG, "Trailer from Intent: " + trailerFromIntent);
+        }
+
+        // Verify we have a trailer
+        String currentTrailer = sessionManager.getCurrentTrailer();
+        if (currentTrailer == null || currentTrailer.trim().isEmpty()) {
+            // No trailer found - this should never happen, but handle it
+            android.util.Log.e(TAG, "No trailer found! Navigating to TrailerActivity");
+            Toast.makeText(this, "Error: No trailer number. Please enter trailer.", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, TrailerActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         // Initialize views
         initializeViews();
 

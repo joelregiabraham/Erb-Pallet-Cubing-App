@@ -21,7 +21,7 @@ public class CsvExporter {
     /**
      * Generate CSV file for a trailer
      * Saves to: Downloads/CubingReports/CubingData_{TrailerNumber}.csv
-     * 
+     *
      * @param context Application context
      * @param trailerNumber Trailer number to export
      * @return File object if successful, null if failed
@@ -30,25 +30,39 @@ public class CsvExporter {
         DatabaseHelper dbHelper = new DatabaseHelper(context);
         File csvFile = null;
 
+        Log.d(TAG, "=== CSV EXPORT START ===");
+        Log.d(TAG, "Trailer: " + trailerNumber);
+
         try {
             // 1. Check if external storage is writable
             if (!isExternalStorageWritable()) {
                 Log.e(TAG, "External storage not writable");
+                Log.e(TAG, "Storage state: " + Environment.getExternalStorageState());
                 return null;
             }
+
+            Log.d(TAG, "External storage is writable");
 
             // 2. Create CubingReports folder in Downloads
             File downloadsDir = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS);
+            Log.d(TAG, "Downloads directory: " + downloadsDir.getAbsolutePath());
+
             File reportDir = new File(downloadsDir, EXPORT_FOLDER);
-            
+            Log.d(TAG, "Report directory: " + reportDir.getAbsolutePath());
+
             if (!reportDir.exists()) {
+                Log.d(TAG, "Directory doesn't exist, creating...");
                 boolean created = reportDir.mkdirs();
                 if (!created) {
                     Log.e(TAG, "Failed to create directory: " + reportDir.getAbsolutePath());
+                    Log.e(TAG, "Parent exists: " + downloadsDir.exists());
+                    Log.e(TAG, "Parent writable: " + downloadsDir.canWrite());
                     return null;
                 }
                 Log.d(TAG, "Created directory: " + reportDir.getAbsolutePath());
+            } else {
+                Log.d(TAG, "Directory already exists");
             }
 
             // 3. Create CSV file
@@ -57,9 +71,15 @@ public class CsvExporter {
             Log.d(TAG, "Creating CSV file: " + csvFile.getAbsolutePath());
 
             // 4. Query database for all records
+            Log.d(TAG, "Querying database for trailer: " + trailerNumber);
             List<DatabaseHelper.CubingRecord> records = dbHelper.getAllRecordsForTrailer(trailerNumber);
-            
-            if (records == null || records.isEmpty()) {
+
+            if (records == null) {
+                Log.e(TAG, "getAllRecordsForTrailer returned NULL!");
+                return null;
+            }
+
+            if (records.isEmpty()) {
                 Log.e(TAG, "No records found for trailer: " + trailerNumber);
                 return null;
             }
@@ -82,23 +102,23 @@ public class CsvExporter {
                 writer.append(escapeCSV(record.proPrefix)).append(",");
                 writer.append(escapeCSV(record.proNumberErb)).append(",");
                 writer.append(escapeCSV(record.freightType)).append(",");
-                
+
                 // Temperature 1 - append "F"
                 writer.append(formatTemperature(record.temp1)).append(",");
-                
+
                 // Temperature 2 - append "F" or "N/A" if null
                 writer.append(formatTemperature(record.temp2)).append(",");
-                
+
                 writer.append(String.valueOf(record.expectedPalletsPro)).append(",");
                 writer.append(String.valueOf(record.palletSequence)).append(",");
                 writer.append(String.valueOf(record.palletHeight)).append(",");
                 writer.append(escapeCSV(record.condition)).append(",");
-                
+
                 // OS&D fields - "N/A" if null
                 writer.append(record.osdReason != null ? escapeCSV(record.osdReason) : "N/A").append(",");
                 writer.append(record.osdQuantity != null ? String.valueOf(record.osdQuantity) : "N/A").append(",");
                 writer.append(record.osdQuantityType != null ? escapeCSV(record.osdQuantityType) : "N/A").append(",");
-                
+
                 writer.append(escapeCSV(record.status)).append("\n");
             }
 
@@ -111,11 +131,17 @@ public class CsvExporter {
             return csvFile;
 
         } catch (IOException e) {
-            Log.e(TAG, "Error creating CSV file: " + e.getMessage(), e);
+            Log.e(TAG, "========== CSV EXPORT FAILED ==========");
+            Log.e(TAG, "IOException: " + e.getMessage());
+            e.printStackTrace();
             return null;
         } catch (Exception e) {
-            Log.e(TAG, "Unexpected error during CSV generation: " + e.getMessage(), e);
+            Log.e(TAG, "========== CSV EXPORT FAILED ==========");
+            Log.e(TAG, "Unexpected error: " + e.getMessage());
+            e.printStackTrace();
             return null;
+        } finally {
+            Log.d(TAG, "=== CSV EXPORT END ===");
         }
     }
 

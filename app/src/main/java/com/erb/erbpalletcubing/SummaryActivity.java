@@ -203,7 +203,8 @@ public class SummaryActivity extends AppCompatActivity {
      * Add another PRO for the same trailer
      */
     private void addAnotherPro() {
-        // Clear PRO-specific session data
+        // KEEP trailer context - DON'T clear it!
+        // Only clear PRO-specific session data
         sessionManager.setCurrentPro("");
         sessionManager.setExpectedPallets(0);
         sessionManager.setCurrentPalletIndex(1);
@@ -211,16 +212,14 @@ public class SummaryActivity extends AppCompatActivity {
         sessionManager.setTemp1("");
         sessionManager.setTemp2("");
 
-        // Clear resume state (going back to PRO header)
-        sessionManager.clearResumeState();
-
-        // Save new resume state for PRO header
+        // Save new resume state for PRO header (trailer is still in SessionManager)
         sessionManager.saveResumeState("pro_header", null);
 
-        Toast.makeText(this, "Ready for next PRO", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Ready for next PRO for trailer " + trailerNumber, Toast.LENGTH_SHORT).show();
 
-        // Navigate to PRO Header
+        // Navigate to PRO Header - pass trailer for extra safety
         Intent intent = new Intent(this, ProHeaderActivity.class);
+        intent.putExtra("TRAILER_NUMBER", trailerNumber);
         startActivity(intent);
         finish();
     }
