@@ -78,11 +78,34 @@ public class SummaryActivity extends AppCompatActivity {
     }
 
     private void loadProData() {
+        // Validate trailer number first
+        if (trailerNumber == null || trailerNumber.trim().isEmpty()) {
+            android.util.Log.e(TAG, "Trailer number is null or empty!");
+            Toast.makeText(this, "Error: No trailer number found. Returning to PRO Header.",
+                    Toast.LENGTH_LONG).show();
+
+            // Navigate to PRO Header to start over
+            Intent intent = new Intent(this, ProHeaderActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        android.util.Log.d(TAG, "Loading PROs for trailer: " + trailerNumber);
+
         // Get all PROs for this trailer
         allPros = dbHelper.getAllProsForTrailer(trailerNumber);
 
+        android.util.Log.d(TAG, "Found " + (allPros != null ? allPros.size() : 0) + " PROs");
+
         if (allPros == null || allPros.isEmpty()) {
-            Toast.makeText(this, "No PRO data found for trailer", Toast.LENGTH_LONG).show();
+            android.util.Log.e(TAG, "No PRO data found for trailer: " + trailerNumber);
+            Toast.makeText(this, "Error: No PRO data found for trailer " + trailerNumber +
+                    ". Returning to PRO Header.", Toast.LENGTH_LONG).show();
+
+            // Navigate to PRO Header to start over
+            Intent intent = new Intent(this, ProHeaderActivity.class);
+            startActivity(intent);
             finish();
             return;
         }
@@ -104,14 +127,14 @@ public class SummaryActivity extends AppCompatActivity {
         for (int i = 0; i < prosToShow; i++) {
             DatabaseHelper.ProSummary pro = allPros.get(i);
             TextView proView = new TextView(this);
-            
-            String proText = (i + 1) + ": PRO " + pro.proNumber + " • " + pro.palletCount + 
-                           " Pallet" + (pro.palletCount != 1 ? "s" : "");
-            
+
+            String proText = (i + 1) + ": PRO " + pro.proNumber + " • " + pro.palletCount +
+                    " Pallet" + (pro.palletCount != 1 ? "s" : "");
+
             proView.setText(proText);
             proView.setTextSize(18);
             proView.setPadding(16, 16, 16, 16);
-            
+
             proListContainer.addView(proView);
         }
 
@@ -237,13 +260,13 @@ public class SummaryActivity extends AppCompatActivity {
 
             if (csvFile != null && csvFile.exists()) {
                 // CSV generated successfully
-                Toast.makeText(SummaryActivity.this, 
-                    "CSV generated: " + csvFile.getName(), 
-                    Toast.LENGTH_SHORT).show();
+                Toast.makeText(SummaryActivity.this,
+                        "CSV generated: " + csvFile.getName(),
+                        Toast.LENGTH_SHORT).show();
 
                 // Launch email intent
                 boolean emailLaunched = EmailIntentHelper.sendCsvEmail(
-                    SummaryActivity.this, csvFile, trailerNumber);
+                        SummaryActivity.this, csvFile, trailerNumber);
 
                 if (emailLaunched) {
                     // Email intent launched successfully
@@ -252,22 +275,22 @@ public class SummaryActivity extends AppCompatActivity {
                 } else {
                     // No email app found, but CSV is still generated
                     Toast.makeText(SummaryActivity.this,
-                        "No email app found. CSV saved to Downloads/CubingReports",
-                        Toast.LENGTH_LONG).show();
-                    
+                            "No email app found. CSV saved to Downloads/CubingReports",
+                            Toast.LENGTH_LONG).show();
+
                     // Still mark as exported
                     updateToPostExportState();
                 }
             } else {
                 // CSV generation failed
                 Toast.makeText(SummaryActivity.this,
-                    "Failed to generate CSV. Please try again.",
-                    Toast.LENGTH_LONG).show();
-                
+                        "Failed to generate CSV. Please try again.",
+                        Toast.LENGTH_LONG).show();
+
                 if (errorMessage != null) {
                     Toast.makeText(SummaryActivity.this,
-                        "Error: " + errorMessage,
-                        Toast.LENGTH_LONG).show();
+                            "Error: " + errorMessage,
+                            Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -291,17 +314,17 @@ public class SummaryActivity extends AppCompatActivity {
      */
     private void deleteDataAndStartNew() {
         new AlertDialog.Builder(this)
-            .setTitle("⚠️ Delete All Data?")
-            .setMessage("Delete all data for trailer " + trailerNumber + "?\n\n" +
-                       "This cannot be undone.")
-            .setPositiveButton("DELETE & START NEW", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    performDelete();
-                }
-            })
-            .setNegativeButton("CANCEL", null)
-            .show();
+                .setTitle("⚠️ Delete All Data?")
+                .setMessage("Delete all data for trailer " + trailerNumber + "?\n\n" +
+                        "This cannot be undone.")
+                .setPositiveButton("DELETE & START NEW", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        performDelete();
+                    }
+                })
+                .setNegativeButton("CANCEL", null)
+                .show();
     }
 
     /**
@@ -324,9 +347,9 @@ public class SummaryActivity extends AppCompatActivity {
             // Clear resume state
             sessionManager.clearResumeState();
 
-            Toast.makeText(this, 
-                "Trailer data deleted. " + deletedRows + " records removed. Ready for next trailer.",
-                Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    "Trailer data deleted. " + deletedRows + " records removed. Ready for next trailer.",
+                    Toast.LENGTH_SHORT).show();
 
             // Navigate to Trailer Activity
             Intent intent = new Intent(this, TrailerActivity.class);
@@ -335,7 +358,7 @@ public class SummaryActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             Toast.makeText(this, "Error deleting data: " + e.getMessage(),
-                Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_LONG).show();
         }
     }
 

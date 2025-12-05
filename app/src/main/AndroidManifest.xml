@@ -2,72 +2,57 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions -->
-    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- Permissions for CT50 Scanner, Database, and File Export -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Erb Pallet Cubing"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:theme="@style/Theme.ErbPalletCubing"
         tools:targetApi="31">
 
-        <!-- LoginActivity - Main Entry Point -->
+        <!-- LoginActivity - LAUNCHER -->
         <activity
             android:name=".LoginActivity"
-            android:screenOrientation="portrait"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Scanner Intent Filter (CT50) -->
+            <!-- Scanner Intent Filter -->
             <intent-filter>
                 <action android:name="com.erb.erbpalletcubing.SCAN" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-        <!-- TrailerActivity - Home Screen -->
+        <!-- TrailerActivity - Phase 2 -->
         <activity
             android:name=".TrailerActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
-
-        <!-- MainActivity - Phase 1 Testing Only (can be removed later) -->
-        <activity
-            android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
+            android:screenOrientation="portrait" />
 
         <!-- ProHeaderActivity - Phase 3 -->
-
         <activity
             android:name=".ProHeaderActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
-
+            android:screenOrientation="portrait" />
 
         <!-- PalletDetailActivity - Phase 4 -->
-
         <activity
             android:name=".PalletDetailActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
-
+            android:screenOrientation="portrait" />
 
         <!-- SummaryActivity - Phase 5 -->
-
         <activity
             android:name=".SummaryActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
+            android:screenOrientation="portrait" />
 
         <!-- FileProvider for secure file sharing (Phase 5 - CSV Export) -->
         <provider
@@ -79,7 +64,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
 
     </application>
 

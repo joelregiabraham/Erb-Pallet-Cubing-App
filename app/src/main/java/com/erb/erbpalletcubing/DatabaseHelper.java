@@ -597,8 +597,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
         List<ProSummary> proList = new ArrayList<>();
 
+        Log.d(TAG, "getAllProsForTrailer called with trailer: " + trailerNumber);
+
         try {
             db = this.getReadableDatabase();
+
+            // DIAGNOSTIC: Check total row count
+            Cursor countCursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_CUBING_DATA, null);
+            if (countCursor != null && countCursor.moveToFirst()) {
+                int totalRows = countCursor.getInt(0);
+                Log.d(TAG, "Total rows in database: " + totalRows);
+                countCursor.close();
+            }
+
+            // DIAGNOSTIC: Show all trailer numbers in database
+            Cursor trailerCursor = db.rawQuery(
+                    "SELECT DISTINCT " + COLUMN_TRAILER_NUMBER + " FROM " + TABLE_CUBING_DATA, null);
+            if (trailerCursor != null) {
+                Log.d(TAG, "Trailers in database: " + trailerCursor.getCount());
+                if (trailerCursor.moveToFirst()) {
+                    do {
+                        String dbTrailer = trailerCursor.getString(0);
+                        Log.d(TAG, "Found trailer: '" + dbTrailer + "' (length: " + dbTrailer.length() + ")");
+                        Log.d(TAG, "Searching for: '" + trailerNumber + "' (length: " + trailerNumber.length() + ")");
+                        Log.d(TAG, "Match: " + dbTrailer.equals(trailerNumber));
+                    } while (trailerCursor.moveToNext());
+                }
+                trailerCursor.close();
+            }
 
             // Query to get unique PROs with count
             String query = "SELECT " + COLUMN_PRO_NUMBER_INCOMING +
@@ -608,7 +634,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     " GROUP BY " + COLUMN_PRO_NUMBER_INCOMING +
                     " ORDER BY MIN(" + COLUMN_TIMESTAMP + ")"; // Order by first entry time
 
+            Log.d(TAG, "Executing query: " + query);
+            Log.d(TAG, "With trailer parameter: '" + trailerNumber + "'");
+
             cursor = db.rawQuery(query, new String[]{trailerNumber});
+
+            Log.d(TAG, "Cursor count: " + (cursor != null ? cursor.getCount() : 0));
 
             if (cursor != null && cursor.moveToFirst()) {
                 do {
@@ -616,13 +647,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     summary.proNumber = cursor.getString(0);
                     summary.palletCount = cursor.getInt(1);
                     proList.add(summary);
+                    Log.d(TAG, "Added PRO: " + summary.proNumber + " with " + summary.palletCount + " pallets");
                 } while (cursor.moveToNext());
+            } else {
+                Log.w(TAG, "Cursor is null or empty for trailer: " + trailerNumber);
             }
 
             Log.d(TAG, "Retrieved " + proList.size() + " PROs for trailer: " + trailerNumber);
 
         } catch (Exception e) {
             Log.e(TAG, "Error getting PROs for trailer: " + e.getMessage(), e);
+            e.printStackTrace();
         } finally {
             if (cursor != null) {
                 cursor.close();
